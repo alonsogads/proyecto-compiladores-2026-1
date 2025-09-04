@@ -78,7 +78,7 @@ public class State {
     public List<State> getTransitions(char symbol) { // La implementación es análoga al metodo anterior
         List<State> symbolStates = new ArrayList<>();
         for (Transition t : this.transitions) {
-            if(t.symbol == symbol && t.symbol != null){
+            if(t.symbol == symbol){
                 symbolStates.add(t.toState);
             }
         }

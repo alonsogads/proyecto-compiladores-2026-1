@@ -1,8 +1,9 @@
 package com.compiler.lexer.regex;
 
 import java.util.Stack;
-
 import com.compiler.lexer.nfa.NFA;
+import com.compiler.lexer.nfa.State;
+import com.compiler.lexer.nfa.Transition;
 
 /**
  * RegexParser
@@ -32,7 +33,6 @@ public class RegexParser {
      * Default constructor for RegexParser.
      */
     public RegexParser() {
-        // TODO: Implement constructor if needed
     }
 
     /**
@@ -42,9 +42,9 @@ public class RegexParser {
      * @return The constructed NFA.
      */
     public NFA parse(String infixRegex) {
-    // TODO: Implement parse
     // Pseudocode: Convert infix to postfix, then build NFA from postfix
-    throw new UnsupportedOperationException("Not implemented");
+        String postfixRegex = ShuntingYard.toPostfix(infixRegex);
+        return buildNfaFromPostfix(postfixRegex);
     }
 
     /**
@@ -54,9 +54,44 @@ public class RegexParser {
      * @return The constructed NFA.
      */
     private NFA buildNfaFromPostfix(String postfixRegex) {
-    // TODO: Implement buildNfaFromPostfix
     // Pseudocode: For each char in postfix, handle operators and operands using a stack
-    throw new UnsupportedOperationException("Not implemented");
+    
+        Stack<NFA> stack = new Stack<>();
+
+        for(int i=0 ; i<postfixRegex.length() ; i++){
+
+            char c = postfixRegex.charAt(i);
+
+            if (isOperand(c)) {
+                stack.push(createNfaForCharacter(c));
+            } else{
+                switch (c) {
+                case '|': 
+                    handleUnion(stack);
+                    break;
+                case '*': 
+                    handleKleeneStar(stack);
+                    break;
+                case '?': 
+                    handleOptional(stack);
+                    break;
+                case '+': 
+                    handlePlus(stack);
+                    break;
+                case '·': 
+                    handleConcatenation(stack);
+                    break;
+                default: 
+                    throw new IllegalArgumentException("Unknown operator: " + c);
+                }
+            }
+        }
+
+        if (stack.size() != 1) {
+            throw new IllegalStateException("Invalid postfix regex, stack size: " + stack.size());
+        }
+
+        return stack.pop();
     }
 
     /**
@@ -65,9 +100,25 @@ public class RegexParser {
      * @param stack The NFA stack.
      */
     private void handleOptional(Stack<NFA> stack) {
-    // TODO: Implement handleOptional
     // Pseudocode: Pop NFA, create new start/end, add epsilon transitions for zero/one occurrence
-    throw new UnsupportedOperationException("Not implemented");
+        NFA nfaA = stack.pop(); // Obtenemos el NFA de la pila
+        
+        State newStart = new State(); // Creamos el nuevo estado inicial
+        State newEnd = new State(); // Creamos el nuevo estado final
+        newEnd.isFinal = true; // Activamos la bandera del nuevo estado final
+
+        Transition epsilonToStartA = new Transition(null, nfaA.getStartState()); // Creamos la transicion epsilon hacia el estado inicial de nfaA
+        Transition epsilonToEnd = new Transition(null, newEnd); // Creamos la transición epsilon hacia el nuevo estado final
+
+        newStart.transitions.add(epsilonToStartA); // Agregamos al nuevo estado inicial la transición epsilon hacia el estado inicial de nfaA
+        newStart.transitions.add(epsilonToEnd); // Agregamos al nuevo estado inicial la transición epsilon hacia el estado final
+
+        // Tambien agregamos al estado final de nfaA la transición epsilon hacia el estado final. Luego cambiamos el valor de su bandera.
+        nfaA.endState.transitions.add(epsilonToEnd);
+        nfaA.endState.isFinal = false;
+
+        NFA nfa = new NFA(newStart, newEnd); // Creamos el nuevo NFA
+        stack.push(nfa); // Agreamos el nuevo NFA a la pila
     }
 
     /**
@@ -76,9 +127,27 @@ public class RegexParser {
      * @param stack The NFA stack.
      */
     private void handlePlus(Stack<NFA> stack) {
-    // TODO: Implement handlePlus
     // Pseudocode: Pop NFA, create new start/end, add transitions for one or more occurrence
-    throw new UnsupportedOperationException("Not implemented");
+        NFA nfaA = stack.pop(); // Obtenemos el NFA de la pila
+        
+        State newStart = new State(); // Creamos el nuevo estado inicial
+        State newEnd = new State(); // Creamos el nuevo estado final
+        newEnd.isFinal = true; // Activamos la bandera del nuevo estado final
+
+        // Creamos la transicion epsilon hacia el estado inicial de nfaA y la agregamos a las transiciones del estado inicial.
+        Transition epsilonToStartA = new Transition(null, nfaA.getStartState());
+        newStart.transitions.add(epsilonToStartA);
+
+        // También agregamos la transición epsilon a las transiciones del estado final de nfaA (para modelar la repetición o bucle).
+        nfaA.endState.transitions.add(epsilonToStartA);
+
+        // Creamos la transición epsilon hacia el estado final. Luego agregamos a las transiciones del estado final de nfaA. Por último cambiamos el valor de la bandera del estado final de nfaA.
+        Transition epsilonToEnd = new Transition(null, newEnd);
+        nfaA.endState.transitions.add(epsilonToEnd);
+        nfaA.endState.isFinal = false;
+
+        NFA nfa = new NFA(newStart, newEnd); // Creamos el nuevo NFA
+        stack.push(nfa); // Agreamos el nuevo NFA a la pila
     }
     
     /**
@@ -87,9 +156,16 @@ public class RegexParser {
      * @return The constructed NFA.
      */
     private NFA createNfaForCharacter(char c) {
-    // TODO: Implement createNfaForCharacter
     // Pseudocode: Create start/end state, add transition for character
-    throw new UnsupportedOperationException("Not implemented");
+        State startState = new State(); // Creamos el estado inicial
+        State endState = new State(); // Creamos el estado final
+        endState.isFinal = true; // Cambiamos el valor de la bandera del estado final
+
+        Transition t = new Transition(c, endState); // Creamos una transición hacia el estado final con 'c' como simbolo
+        startState.transitions.add(t); // Agregamos la transicion a la lista de transiciones del estado inicial
+
+        NFA nfa =new NFA(startState, endState); // Creamos el NFA con los estados creados
+        return nfa;
     }
 
     /**
@@ -98,9 +174,17 @@ public class RegexParser {
      * @param stack The NFA stack.
      */
     private void handleConcatenation(Stack<NFA> stack) {
-    // TODO: Implement handleConcatenation
     // Pseudocode: Pop two NFAs, connect end of first to start of second
-    throw new UnsupportedOperationException("Not implemented");
+
+        NFA nfaB = stack.pop(); // Obtenemos el segundo NFA de la pila
+        NFA nfaA = stack.pop(); // Obtenemos el primer NFA de la pila
+        
+        Transition t = new Transition(null, nfaB.getStartState()); // Creamos una nueva transicion epsilon hacia el estado inicial de nfaB
+        nfaA.endState.transitions.add(t); // Agregamos la transición anterior al estado final de nfaA.
+        nfaA.endState.isFinal = false; // Cambiamos la bandera de estado final de nfaA
+
+        NFA nfa = new NFA(nfaA.getStartState(), nfaB.endState); // Creamos el nuevo NFA
+        stack.push(nfa); // Agregamos el nuevo NFA a la pila
     }
 
     /**
@@ -109,9 +193,30 @@ public class RegexParser {
      * @param stack The NFA stack.
      */
     private void handleUnion(Stack<NFA> stack) {
-    // TODO: Implement handleUnion
     // Pseudocode: Pop two NFAs, create new start/end, add epsilon transitions for union
-    throw new UnsupportedOperationException("Not implemented");
+
+        NFA nfaB = stack.pop(); // Obtenemos el segundo NFA de la pila
+        NFA nfaA = stack.pop(); // Obtenemos el primer NFA de la pila
+        
+        State newStart = new State(); // Creamos el nuevo estado inicial
+        State newEnd = new State(); // Creamos el nuevo estado final
+        newEnd.isFinal = true; // Activamos la bandera del nuevo estado final
+
+        Transition epsilonToStartA = new Transition(null, nfaA.getStartState()); // Creamos la transición epsilon hacia el estado inical de nfaA
+        Transition epsilonToStartB = new Transition(null, nfaB.getStartState()); // Creamos la transición epsilon hacia el estado inicial de nfaB.
+        // Agregamos las dos transiciones a la lista de transiciones del nuevo estado inicial
+        newStart.transitions.add(epsilonToStartA);
+        newStart.transitions.add(epsilonToStartB);
+
+        Transition epsilonToEnd = new Transition(null, newEnd); // Creamos una transición epsilon hacia el nuevo estado final.
+        // Agregamos la transición al estado final de nfaA y nfaB y cambiamos el valor de sus banderas
+        nfaA.endState.transitions.add(epsilonToEnd);
+        nfaB.endState.transitions.add(epsilonToEnd);
+        nfaA.endState.isFinal = false;
+        nfaB.endState.isFinal = false;
+
+        NFA nfa = new NFA(newStart, newEnd); // Creamos el nuevo NFA
+        stack.push(nfa); // Agreamos el nuevo NFA a la pila
     }
 
     /**
@@ -120,9 +225,27 @@ public class RegexParser {
      * @param stack The NFA stack.
      */
     private void handleKleeneStar(Stack<NFA> stack) {
-    // TODO: Implement handleKleeneStar
     // Pseudocode: Pop NFA, create new start/end, add transitions for zero or more repetitions
-    throw new UnsupportedOperationException("Not implemented");
+        NFA nfaA = stack.pop(); // Obtenemos el NFA de la pila
+        
+        State newStart = new State(); // Creamos el nuevo estado inicial
+        State newEnd = new State(); // Creamos el nuevo estado final
+        newEnd.isFinal = true; // Activamos la bandera del nuevo estado final
+
+        // Creamos la transicion epsilon hacia el estado inicial de nfaA, y la agregamos a las transiciones del estado final de nfaA (para modelar la repetición o bucle)
+        Transition epsilonToStartA = new Transition(null, nfaA.getStartState());
+        nfaA.endState.transitions.add(epsilonToStartA);
+
+        Transition epsilonToEnd = new Transition(null, newEnd); // Creamos la transición epsilon hacia el nuevo estado final
+        newStart.transitions.add(epsilonToStartA); // Agregamos al nuevo estado inicial la transición epsilon hacia el estado inicial de nfaA
+        newStart.transitions.add(epsilonToEnd); // Agregamos al nuevo estado inicial la transición epsilon hacia el estado final
+
+        // Tambien agregamos al estado final de nfaA la transición epsilon hacia el estado final. Luego cambiamos el valor de su bandera.
+        nfaA.endState.transitions.add(epsilonToEnd);
+        nfaA.endState.isFinal = false;
+
+        NFA nfa = new NFA(newStart, newEnd); // Creamos el nuevo NFA
+        stack.push(nfa); // Agreamos el nuevo NFA a la pila
     }
 
     /**
@@ -131,14 +254,29 @@ public class RegexParser {
      * @return True if the character is an operand, false if it is an operator.
      */
     private boolean isOperand(char c) {
-    // TODO: Implement isOperand
     // Pseudocode: Return true if c is not an operator
-    throw new UnsupportedOperationException("Not implemented");
+        switch (c) {
+          case '|': return false;
+          case '*': return false;
+          case '?': return false;
+          case '+': return false;
+          case '(': return false;
+          case ')': return false;
+          case '·': return false;
+          default: return true;
+        }
     }
 
     /*
     public static void main(String args[]){
-        
-        
-    } */
+
+        RegexParser parser = new RegexParser();
+        String str = "(a|b)*(c)+";
+        NFA nfa = parser.parse(str);
+        System.out.println(ShuntingYard.toPostfix(str));
+        System.out.println("Estado inicial:");
+        System.out.println(nfa.getStartState().id);
+        System.out.println("Estado final:");
+        System.out.println(nfa.endState.id);;
+    }*/
 }
