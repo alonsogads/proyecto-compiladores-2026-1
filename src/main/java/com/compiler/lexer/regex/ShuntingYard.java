@@ -101,7 +101,7 @@ public class ShuntingYard {
      */
     public static String toPostfix(String infixRegex) {
 
-        String regex = insertConcatenationOperator(infixRegex);
+        String regex = insertConcatenationOperator(infixRegex); // Primero hacemos la conversión de la cadena a su notación postfija
 
         StringBuilder salida = new StringBuilder();
         Stack<Character> operadores = new Stack<>();
@@ -160,8 +160,9 @@ public class ShuntingYard {
         return salida.toString();
     }
 
+    /*
     public static void main(String args[]){
         String er = "((a|b)+)|(def)*";
         System.out.println(toPostfix(er));
-    }
+    } */
 }

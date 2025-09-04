@@ -23,6 +23,7 @@ import com.compiler.lexer.nfa.NFA;
  *     NFA nfa = parser.parse("a(b|c)*");
  * </pre>
  */
+
 /**
  * Parses regular expressions and constructs NFAs using Thompson's construction.
  */
@@ -30,9 +31,9 @@ public class RegexParser {
     /**
      * Default constructor for RegexParser.
      */
-        public RegexParser() {
-            // TODO: Implement constructor if needed
-        }
+    public RegexParser() {
+        // TODO: Implement constructor if needed
+    }
 
     /**
      * Converts an infix regular expression to an NFA.
@@ -134,4 +135,10 @@ public class RegexParser {
     // Pseudocode: Return true if c is not an operator
     throw new UnsupportedOperationException("Not implemented");
     }
+
+    /*
+    public static void main(String args[]){
+        
+        
+    } */
 }

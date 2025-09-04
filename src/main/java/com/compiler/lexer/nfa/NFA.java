@@ -24,8 +24,9 @@ public class NFA {
      * @param end The final (accepting) state.
      */
     public NFA(State start, State end) {
-        // TODO: Implement constructor
-        throw new UnsupportedOperationException("Not implemented");
+        this.startState = start;
+        this.endState = end;
+        this.endState.isFinal = true; // Cambiamos el valor de la bandera del estado final
     }
 
     /**
@@ -33,7 +34,6 @@ public class NFA {
      * @return the start state
      */
     public State getStartState() {
-    // TODO: Implement getStartState
-    throw new UnsupportedOperationException("Not implemented");
+        return startState;
     }
 }

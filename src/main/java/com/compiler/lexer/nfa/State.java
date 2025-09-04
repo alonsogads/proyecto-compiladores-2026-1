@@ -1,5 +1,6 @@
 package com.compiler.lexer.nfa;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -42,8 +43,9 @@ public class State {
      * The state is not final by default.
      */
     public State() {
-    // TODO: Implement constructor
-    throw new UnsupportedOperationException("Not implemented");
+        this.id = nextId++;
+        this.transitions = new ArrayList<>();
+        this.isFinal = false;
     }
 
     /**
@@ -51,8 +53,7 @@ public class State {
      * @return true if this state is final, false otherwise
      */
     public boolean isFinal() {
-    // TODO: Implement isFinal
-    throw new UnsupportedOperationException("Not implemented");
+        return isFinal;
     }
 
     /**
@@ -60,9 +61,13 @@ public class State {
      * @return a list of states reachable by epsilon transitions
      */
     public List<State> getEpsilonTransitions() {
-    // TODO: Implement getEpsilonTransitions
-    // Pseudocode: Iterate over transitions, if symbol is null, add to result list
-    throw new UnsupportedOperationException("Not implemented");
+        List<State> episilonStates = new ArrayList<>(); // Lista para guardar los estados alcanzables
+        for (Transition t : this.transitions) { // Recorremos toda la lista de transiciones
+            if(t.symbol == null){ // Evaluamos si la transicion es epsilon
+                episilonStates.add(t.toState); // Si es el caso, el estado se agrega a la lista de estados epsilon.
+            }
+        }
+        return episilonStates;
     }
 
     /**
@@ -70,9 +75,13 @@ public class State {
      * @param symbol the symbol for the transition
      * @return a list of states reachable by the given symbol
      */
-    public List<State> getTransitions(char symbol) {
-    // TODO: Implement getTransitions
-    // Pseudocode: Iterate over transitions, if symbol matches, add to result list
-    throw new UnsupportedOperationException("Not implemented");
+    public List<State> getTransitions(char symbol) { // La implementación es análoga al metodo anterior
+        List<State> symbolStates = new ArrayList<>();
+        for (Transition t : this.transitions) {
+            if(t.symbol == symbol && t.symbol != null){
+                symbolStates.add(t.toState);
+            }
+        }
+        return symbolStates;
     }
 }
