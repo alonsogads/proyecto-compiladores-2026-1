@@ -69,3 +69,4 @@ mvn clean install
 ## ✒️ Authors
 
 * **Adrián Martínez** - `adrian-mm-fc`
+* **Gustavo Alonso Dominguez Sanchez** - `alonsogads`
