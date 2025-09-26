@@ -21,9 +21,9 @@ public class NfaToDfaConverter {
 	/**
 	 * Default constructor for NfaToDfaConverter.
 	 */
-		public NfaToDfaConverter() {
-			// TODO: Implement constructor if needed
-		}
+	public NfaToDfaConverter() {
+		// TODO: Implement constructor if needed
+	}
 
 	/**
 	 * Converts an NFA to a DFA using the subset construction algorithm.
@@ -65,7 +65,7 @@ public class NfaToDfaConverter {
 	 3. For each state, add all reachable states via epsilon transitions
 	 4. Return closure set
 	*/
-	throw new UnsupportedOperationException("Not implemented");
+		throw new UnsupportedOperationException("Not implemented");
 	}
 
 	/**
