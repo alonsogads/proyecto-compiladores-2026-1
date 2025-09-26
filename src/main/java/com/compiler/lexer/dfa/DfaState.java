@@ -1,6 +1,8 @@
 package com.compiler.lexer.dfa;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import com.compiler.lexer.nfa.State;
@@ -18,9 +20,9 @@ public class DfaState {
      * @return Map of input symbols to destination DFA states.
      */
     public Map<Character, DfaState> getTransitions() {
-        // TODO: Implement getTransitions
-        throw new UnsupportedOperationException("Not implemented");
+        return transitions;
     }
+
     private static int nextId = 0;
     /**
      * Unique identifier for this DFA state.
@@ -44,8 +46,16 @@ public class DfaState {
      * @param nfaStates The set of NFA states that this DFA state represents.
      */
     public DfaState(Set<State> nfaStates) {
-    // TODO: Implement constructor
-    throw new UnsupportedOperationException("Not implemented");
+        this.id = nextId++;
+        this.nfaStates = nfaStates;
+        this.transitions = new HashMap<>();
+        this.isFinal = false;
+        for (State state : nfaStates) { // Ciclo que recorre el conjunto de los estados de los NFA.
+            if(state.isFinal){
+                this.isFinal = true; // Si alguno estado NFA es final, entonces el estado DFA también lo es.
+                break;
+            }
+        }
     }
 
     /**
@@ -54,8 +64,7 @@ public class DfaState {
      * @param toState The destination DFA state.
      */
     public void addTransition(Character symbol, DfaState toState) {
-    // TODO: Implement addTransition
-    throw new UnsupportedOperationException("Not implemented");
+        this.transitions.put(symbol, toState);
     }
 
     /**
@@ -65,8 +74,10 @@ public class DfaState {
      */
     @Override
     public boolean equals(Object obj) {
-    // TODO: Implement equals
-    throw new UnsupportedOperationException("Not implemented");
+        if(this == obj) return true;    // Si tienen la misma referencia en memoria, entonces son iguales (true).
+        if(obj == null || this.getClass() != obj.getClass()) return false;  // Si el objeto es nulo, o si es un objeto de distinta clase, entonces son distintos (false).
+        DfaState dfaState = (DfaState) obj; // Hacemos el cast de obj.
+        return this.nfaStates.equals(dfaState.nfaStates);   // Usamos el equals de Set para comparar ambos conjuntos de estados, y devolvemos el resultado booleano de la comparación.
     }
 
     /**
@@ -75,8 +86,8 @@ public class DfaState {
      */
     @Override
     public int hashCode() {
-    // TODO: Implement hashCode
-    throw new UnsupportedOperationException("Not implemented");
+        // Ya que en el método equals, definimos que dos instancias de DfaState son iguales en base a sus nfaStates, entonces utilizamos la función hash nativa y nos basamos sobre su nfaState (parámetro).
+        return Objects.hash(this.nfaStates);
     }
     
     /**
@@ -85,8 +96,9 @@ public class DfaState {
      */
     @Override
     public String toString() {
-    // TODO: Implement toString
-    throw new UnsupportedOperationException("Not implemented");
+        StringBuilder cadena = new StringBuilder("DFA " + this.id);
+        if(this.isFinal) cadena.append("*");
+        return cadena.toString();
     }
 
     /**
@@ -94,8 +106,7 @@ public class DfaState {
      * @param isFinal True if this state is a final state, false otherwise.
      */
     public void setFinal(boolean isFinal) {
-    // TODO: Implement setFinal
-    throw new UnsupportedOperationException("Not implemented");
+        this.isFinal = isFinal;
     }
 
     /**
@@ -103,8 +114,7 @@ public class DfaState {
      * @return True if this state is a final state, false otherwise.
      */
     public boolean isFinal() {
-    // TODO: Implement isFinal
-    throw new UnsupportedOperationException("Not implemented");
+        return this.isFinal;
     }
 
     /**
@@ -113,8 +123,7 @@ public class DfaState {
      * @return The destination DFA state for the transition, or null if there is no transition for the given symbol.
      */
     public DfaState getTransition(char symbol) {
-    // TODO: Implement getTransition
-    throw new UnsupportedOperationException("Not implemented");
+        return transitions.get(symbol);
     }
 
     /**
@@ -122,7 +131,6 @@ public class DfaState {
      * @return The set of NFA states.
      */
     public Set<State> getName() {
-    // TODO: Implement getName
-    throw new UnsupportedOperationException("Not implemented");
+        return this.nfaStates;
     }
 }

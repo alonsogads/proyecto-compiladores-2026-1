@@ -25,6 +25,7 @@
 
 # Build products
 target/
+out/
 
 # Java docs [Temporary]
 docs/

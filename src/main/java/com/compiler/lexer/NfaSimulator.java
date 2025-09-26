@@ -1,9 +1,15 @@
 package com.compiler.lexer;
 
 import java.util.Set;
+import java.util.HashSet;
+import java.util.List;
+import java.util.ArrayList;
 
 import com.compiler.lexer.nfa.NFA;
 import com.compiler.lexer.nfa.State;
+import com.compiler.lexer.nfa.Transition;
+import com.compiler.lexer.regex.RegexParser;
+import com.compiler.lexer.regex.ShuntingYard;
 
 /**
  * NfaSimulator
@@ -28,9 +34,9 @@ public class NfaSimulator {
     /**
      * Default constructor for NfaSimulator.
      */
-        public NfaSimulator() {
-            // TODO: Implement constructor if needed
-        }
+    public NfaSimulator() {
+        // Implement constructor if needed
+    }
 
     /**
      * Simulates the NFA on the given input string.
@@ -42,7 +48,6 @@ public class NfaSimulator {
      * @return True if the input is accepted by the NFA, false otherwise.
      */
     public boolean simulate(NFA nfa, String input) {
-        // TODO: Implement simulate
         /*
          Pseudocode:
          1. Initialize currentStates with epsilon-closure of NFA start state
@@ -55,7 +60,38 @@ public class NfaSimulator {
          3. After input, if any state in currentStates is final, return true
          4. Otherwise, return false
         */
-        throw new UnsupportedOperationException("Not implemented");
+        // Paso 1
+        Set<State> closureSet = new HashSet<>();
+        this.addEpsilonClosure(nfa.getStartState(), closureSet);
+
+        // Paso 2
+        char[] characters = input.toCharArray();
+        Set<State> currentStates = closureSet;
+        Set<State> nextStates = new HashSet<>();
+
+        for (char c : characters) {
+
+            for (State state : currentStates) {
+
+                List<Transition> transitions = state.transitions;
+                for (Transition transition : transitions) {
+
+                    if(transition.symbol != null && transition.symbol.charValue() == c){
+                        addEpsilonClosure(transition.toState, nextStates);
+                    }
+                }
+            }
+            if (nextStates.isEmpty()) return false; // El simbolo evaluado actual, indica que la cadena no es aceptada. Paramos y retornamos false.
+            currentStates = new HashSet<>(nextStates);
+            nextStates.clear(); // Limpiamos el conjunto de estados siguientes
+        }
+
+        // Paso 3
+        for (State state : currentStates) {
+            if(state.isFinal()) return true;
+        }
+
+        return false;
     }
 
     /**
@@ -65,15 +101,43 @@ public class NfaSimulator {
      * @param closureSet The set to accumulate reachable states.
      */
     private void addEpsilonClosure(State start, Set<State> closureSet) {
-        // TODO: Implement addEpsilonClosure
-        /*
-         Pseudocode:
-         If start not in closureSet:
-             - Add start to closureSet
-             - For each transition in start:
-                 - If transition symbol is null:
-                     - Recursively add epsilon-closure of destination state
-        */
-        throw new UnsupportedOperationException("Not implemented");
+
+        List<State> currentStates = start.getEpsilonTransitions();
+        List<State> nextStates = new ArrayList<>();
+
+        do {
+            nextStates.clear();
+            for (State currentState : currentStates) {
+                closureSet.add(currentState);
+                for (State state : currentState.getEpsilonTransitions()) {
+                    if(!closureSet.contains(state)){
+                        nextStates.add(state);
+                    }
+                }
+            }
+            
+            currentStates.clear();
+            for (State state : nextStates) {
+                currentStates.add(state);
+            }
+
+        } while (!nextStates.isEmpty());
     }
+
+    /*
+    public static void main(String args[]){
+
+        RegexParser parser = new RegexParser();
+        String regex = "(a*)*";
+        NFA nfa = parser.parse(regex);
+
+        NfaSimulator nfaSimulator = new NfaSimulator();
+        String cadena = "b";
+        boolean b = nfaSimulator.simulate(nfa, cadena);
+        if(b){
+            System.out.println("\nLa cadena '" + cadena + "' es aceptada por el NFA.");
+        }else{
+            System.out.println("\nLa cadena '" + cadena + "' no es aceptada por el NFA.");
+        }
+    }*/
 }

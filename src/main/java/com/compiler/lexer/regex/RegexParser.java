@@ -267,16 +267,18 @@ public class RegexParser {
         }
     }
 
-    /*
+    /* Local test
     public static void main(String args[]){
 
         RegexParser parser = new RegexParser();
         String str = "(a|b)*(c)+";
         NFA nfa = parser.parse(str);
-        System.out.println(ShuntingYard.toPostfix(str));
-        System.out.println("Estado inicial:");
+        System.out.println("\nCadena original: " + str);
+        System.out.println("Notación postfija: " + ShuntingYard.toPostfix(str));
+        System.out.println("\nEstado inicial:");
         System.out.println(nfa.getStartState().id);
         System.out.println("Estado final:");
-        System.out.println(nfa.endState.id);;
-    }*/
+        System.out.println(nfa.endState.id);
+        System.out.println(nfa);
+    } */
 }
