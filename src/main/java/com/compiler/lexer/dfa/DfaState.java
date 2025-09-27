@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import com.compiler.lexer.nfa.State;
+import com.compiler.lexer.nfa.Transition;
 
 /**
  * DfaState
@@ -52,7 +53,7 @@ public class DfaState {
         this.isFinal = false;
         for (State state : nfaStates) { // Ciclo que recorre el conjunto de los estados de los NFA.
             if(state.isFinal){
-                this.isFinal = true; // Si alguno estado NFA es final, entonces el estado DFA también lo es.
+                this.isFinal = true; // Si alguń estado NFA es final, entonces el estado DFA también lo es.
                 break;
             }
         }
@@ -96,8 +97,16 @@ public class DfaState {
      */
     @Override
     public String toString() {
-        StringBuilder cadena = new StringBuilder("DFA " + this.id);
+        StringBuilder cadena = new StringBuilder("- DfaState " + this.id);
         if(this.isFinal) cadena.append("*");
+        cadena.append(".\n\t  NFA states: ");
+        for (State state : this.nfaStates){
+            cadena.append(state.id + " , ");
+        }
+        cadena.append("\n\t  Transitions:");
+        for (Character character : this.transitions.keySet()){
+            cadena.append("\n\t\t  Symbol '" + character.charValue() + "' -> DfaState " + this.transitions.get(character).id);
+        }
         return cadena.toString();
     }
 
@@ -123,7 +132,7 @@ public class DfaState {
      * @return The destination DFA state for the transition, or null if there is no transition for the given symbol.
      */
     public DfaState getTransition(char symbol) {
-        return transitions.get(symbol);
+        return this.transitions.get(symbol);
     }
 
     /**
@@ -133,4 +142,5 @@ public class DfaState {
     public Set<State> getName() {
         return this.nfaStates;
     }
+
 }
