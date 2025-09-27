@@ -128,11 +128,11 @@ public class NfaSimulator {
     public static void main(String args[]){
 
         RegexParser parser = new RegexParser();
-        String regex = "(a*)*";
+        String regex = "(a|b)*(c)+";
         NFA nfa = parser.parse(regex);
 
         NfaSimulator nfaSimulator = new NfaSimulator();
-        String cadena = "b";
+        String cadena = "ababaac";
         boolean b = nfaSimulator.simulate(nfa, cadena);
         if(b){
             System.out.println("\nLa cadena '" + cadena + "' es aceptada por el NFA.");
